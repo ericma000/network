@@ -17,22 +17,14 @@ var width = 800,
 //Read the data from the mis element 
 var mis = document.getElementById('mis').innerHTML;
 graph = JSON.parse(mis);
-console.log('graph ', graph)
 
-var opacityScale = d3.scale.linear().domain([d3.max(graph.links, function(d) {return d.value}), d3.min(graph.links, function(d) {return d.value})]).range([1,.1])
+// Set scales
+var opacityScale = d3.scale.linear().domain([d3.max(graph.links, function(d) {return d.value}), d3.min(graph.links, function(d) {return d.value})]).range([1,.02])
 var distanceScale = d3.scale.linear().domain([d3.max(graph.links, function(d) {return d.value}), d3.min(graph.links, function(d) {return d.value})]).range([1000,10])
 var chargeScale = d3.scale.linear().domain([d3.max(graph.links, function(d) {return d.value}), d3.min(graph.links, function(d) {return d.value})]).range([-120,120])
-
-//Set up the colour scale
+var widthScale = d3.scale.linear().domain([d3.max(graph.links, function(d) {return d.value}), d3.min(graph.links, function(d) {return d.value})]).range([20, 1])
 var color = d3.scale.category20();
 
-//Set up the force layout
-// var force = d3.layout.force()
-//     .charge(-120)
-//     .linkDistance(function(d){
-//         return settings.distance == true ? distanceScale(d.value) : 100
-//     })
-//     .size([width, height]);
 
 //Append a SVG to the body of the html page. Assign this SVG as an object to svg
 
@@ -47,18 +39,10 @@ var update = function() {
 
     var force = d3.layout.force()
         .charge(-120)
-        // .charge(function(d){
-        //     console.log(d, chargeScale(d.value))
-        //     return settings.distance == true ? chargeScale(d.value) : -120
-        // })
         .linkDistance(function(d){
             console.log('distance ', distanceScale(d.value))
-            return settings.distance == true ? distanceScale(d.value) : 30
+            return settings.distance == true ? distanceScale(d.value) : 100
         })
-
-        // .linkStrength(function(d){
-        //     return opacityScale(d.value)
-        // })
         .size([width, height]);
 
     force.nodes(graph.nodes)
@@ -120,7 +104,7 @@ var update = function() {
           return settings.opacity == true ? opacityScale(d.value) : .7
         })
         .style("stroke-width", function (d) {
-         return settings.width == true ? Math.sqrt(d.value*3) : 3;
+         return settings.width == true ? widthScale(d.value) : 3;
         });
 
     d3.selectAll('.node').style("fill", function (d) {
